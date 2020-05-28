@@ -1,0 +1,28 @@
+{
+  "name": "back-end_to_irriga2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "standard": "^14.3.4"
+  },
+  "devDependencies": {
+      "standard": "*"
+  },
+  "scripts": {
+    "test": "standard && node my-tests.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elemos/Back-End_to_irriga2.git"
+  },
+  "author": "Eduardo Lemos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elemos/Back-End_to_irriga2/issues"
+  },
+  "homepage": "https://github.com/elemos/Back-End_to_irriga2#readme"
+}
