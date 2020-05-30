@@ -12,7 +12,7 @@ async function buscacidades(){
 async function start(){
     
     
-    let teste = await model.select();
+    let teste = await model.select('*', 'cities');
 
     console.log("antes da chamada");
     
