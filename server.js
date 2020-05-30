@@ -1,30 +1,32 @@
 const express = require("express");
 const app = express();
+const model = require('./model.js');
 
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'J@dif132',
-  database: 'IRRIGA'
-});
+async function buscacidades(){
+    let teste = await model.select("*", "cities");
+}
 
-connection.connect()
 
-connection.query('SELECT * FROM cities ', function (err, rows, fields) {
-  if (err) throw err
-    console.log("aqui")
-    console.log(rows.length)
+
+
+async function start(){
     
-    for (i = 0; i<rows.length; i ++){
-        console.log('The solution is: ', rows[i].name);
-    }
-    console.log("aqui2")
-});
+    
+    let teste = await model.select();
 
-connection.end();
+    console.log("antes da chamada");
+    
+    console.log(teste);
+    
+    console.log("depois da chamada");
+}
+
+start();
 
 
-app.listen(3000, () => {
+
+/*app.listen(3000, () => {
            console.log("Server start");
+            start();
            })
+*/
