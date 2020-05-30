@@ -2,8 +2,13 @@ const express = require("express");
 const app = express();
 const model = require('./model.js');
 
+var cidades;
 async function buscacidades(){
-    let teste = await model.select("*", "cities");
+    
+    let teste = await model.select("*", "cities", "");
+    console.log(teste);
+    this.cidade = teste;
+    
 }
 
 
@@ -11,14 +16,9 @@ async function buscacidades(){
 
 async function start(){
     
-    
-    let teste = await model.select('*', 'cities');
+    await buscacidades();
+    console.log(this.cidade);
 
-    console.log("antes da chamada");
-    
-    console.log(teste);
-    
-    console.log("depois da chamada");
 }
 
 start();
