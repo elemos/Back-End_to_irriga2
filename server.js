@@ -17,20 +17,7 @@ async function buscacidades(){
 }
 
 async function buscaclima(){
-    //Iniciando as variaveis
-    this.citieWeather = [];
-    this.WeatherInfo = {
-        id_citie:   "",
-        temp:       "",
-        temp_max:   "",
-        temp_min:   "",
-        wind_speed: "",
-        sunrise:    "",
-        sunset:     "",
-        rain:       "",
-        time_stamp: "",
-    };
-    
+
     for(var i = 0; i<this.cidade.length-1;i++){
         
         
@@ -41,49 +28,23 @@ async function buscaclima(){
                         'appid=9b12c926e2e3d6b81482cf88efc3f15a&' +
                         'units=metric').then(
             (response) => {
+   
+                valores = '( 0,' + this.cidade[i].id + ',' + response.data.main.temp + ',' + response.data.main.temp_max + ',' +                               response.data.main.temp_min + ',' + response.data.wind.speed + ',' + response.data.sys.sunrise + ',' +                                   response.data.sys.sunset + ',' + 0 + ',' + response.data.dt + ')';
 
-                //savando o Json em um objeto
-                this.WeatherInfo.id_citie   = this.cidade[i].id;
-                this.WeatherInfo.temp       = response.data.main.temp; 
-                this.WeatherInfo.temp_max   = response.data.main.temp_max; 
-                this.WeatherInfo.temp_min   = response.data.main.temp_min; 
-                this.WeatherInfo.wind_speed = response.data.wind.speed; 
-                this.WeatherInfo.sunrise    = response.data.sys.sunrise; 
-                this.WeatherInfo.sunset     = response.data.sys.sunset; 
-                this.WeatherInfo.rain       = '0';
-                this.WeatherInfo.time_stamp = response.data.dt; 
+                model.Insert("citie_wheather", "", valores);
 
-                //carregando o objeto pra um array list
-                this.citieWeather[i] = (this.WeatherInfo);
-                
-        valores = '( 0,' + this.citieWeather[i].id_citie + ',' + this.citieWeather[i].temp + ',' + this.citieWeather[i].temp_max + ',' +                                    this.citieWeather[i].temp_min + ',' + this.citieWeather[i].wind_speed + ',' + this.citieWeather[i].sunrise + ',' +                                this.citieWeather[i].sunset + ',' + this.citieWeather[i].rain + ',' + this.citieWeather[i].time_stamp + ')';
-         model.Insert("citie_wheather", "", valores);
-                
-                console.log(this.citieWeather[i]);
+               
                 
             },
             (error) => {
                 console.log(error);
         });
     }
-    //const api_url = `https://api.darksky.net/forecast/${APIKEY}/${req.body.lat},${req.body.lon}?units=auto` //busca JSON na API
-      
+    
 }
 
 async function criaobjeto(){
     
-}
-async function SalvaClima(){
-    for(var i = 0; i<this.citieWeather.length; i++){
-        
-        valores = '( 0,' + this.citieWeather[i].id_citie + ',' + this.citieWeather[i].temp + ',' + this.citieWeather[i].temp_max + ',' +                                    this.citieWeather[i].temp_min + ',' + this.citieWeather[i].wind_speed + ',' + this.citieWeather[i].sunrise + ',' +                                this.citieWeather[i].sunset + ',' + this.citieWeather[i].rain + ',' + this.citieWeather[i].time_stamp + ')';
-        await model.Insert("citie_wheather", "", valores);   
-        
-        console.log(i);
-        console.log(this.citieWeather[i]);
-        console.log(valores);
-       
-    }
 }
 
 
