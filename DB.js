@@ -1,3 +1,6 @@
+//Contem as credenciais do banco
+//E efetiva a conexão e retornar um listener para a aplicação usar
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
         host: 'localhost',
