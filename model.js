@@ -41,7 +41,7 @@ async function select(consulta, tabela, condition){
 //Variavel arguments recebe quais os campos e valores a serem atualizados, 
 //variavel tabela contem a tabela da busca
 //Variael condition contém as condições do WHERE, caso não queira utilizar o where a variavel deve conter um string vazia "";
-function update(tabela, arguments, condition){
+async function update(tabela, arguments, condition){
     
     return new Promise(async function(resolve,reject){
         try{
@@ -70,11 +70,12 @@ function update(tabela, arguments, condition){
 //variavel tabela contem a tabela da busca
 //Variavel values contem os valores a serem inseridos
 
-function Insert(tabela, columns, values){
+async function Insert(tabela, columns, values){
     
     return new Promise(async function(resolve,reject){
         try{
-             
+             console.log("dentro da função insert");
+            console.log('INSERT INTO ' + tabela + ' ' + columns + ' VALUES ' +values);
              sql.query('INSERT INTO ' + tabela + ' ' + columns + ' VALUES ' +values, function (err, rows, fields){
                  resolve(rows);
              });
@@ -92,7 +93,7 @@ function Insert(tabela, columns, values){
 //Função para fazer o delete dentro do banco de dados
 //variavel tabela contem a tabela da busca
 //Variael condition contém as condições do WHERE, caso não queira utilizar o where a variavel deve conter um string vazia "";
-function Delete(tabela, condition){
+async function Delete(tabela, condition){
     return new Promise(async function(resolve,reject){
         try{
              
@@ -110,7 +111,27 @@ function Delete(tabela, condition){
     });
 }
 
+//Função usada para ações no banco ais especificas que não se enquadrão na versões anteriores
+async function genericsql(query){
+    return new Promise(async function(resolve,reject){
+        try{
+             
+             sql.query(querry, function (err, rows, fields){
+                 resolve(rows);
+             });
+     
+        } catch (err) {
+
+          console.log('Error occurred', err);
+
+          reject(rows);
+            
+        }
+    });
+}
+
 module.exports.select = select;
 module.exports.update = update;
-module.exports.insert = Insert;
+module.exports.Insert = Insert;
 module.exports.delete = Delete;
+module.exports.genericsql = genericsql;
