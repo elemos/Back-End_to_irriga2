@@ -1,4 +1,6 @@
 USE IRRIGA;
+
+
 CREATE TABLE citie_wheather (
 	id 			INT PRIMARY KEY serial default value 	NOT NULL,
     id_cities 	int  							NOT NULL,
@@ -14,11 +16,6 @@ CREATE TABLE citie_wheather (
     FOREIGN KEY (id_cities) REFERENCES cities(id)
 );
 
-INSERT INTO citie_wheather 
-VALUES ( 0,3,12.46,13,12.22,5.1,1590893814,1590950522,"undefined",1590887237);
 
 
 
-
-SELECT *
-from citie_wheather

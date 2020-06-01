@@ -1,5 +1,5 @@
 var sql = require('./DB.js');
-var result;
+const log = require ('./logs.js');
 
 /*
 **
@@ -23,6 +23,7 @@ async function select(consulta, tabela, condition){
             } else con = 'SELECT ' + consulta + ' FROM ' + tabela;
             
             //Printa na tela a string de consulta
+            log.info(con);
             console.log(con);
             
             //Faz a consulta efetivamente
@@ -34,7 +35,7 @@ async function select(consulta, tabela, condition){
         });
         //Caso a consulta retorne erro ele é mostrado na tela
         } catch (err) {
-
+            log.info("Ocorreu um erro ao fazer o select" + err);
           console.log('Um erro ocorreu ao selecionar: ', err);
         
           reject(rows);
@@ -60,6 +61,7 @@ async function update(tabela, arguments, condition){
                     break;
                 }
                 //Printa na tela a string de consulta
+                log.info(con);
                 console.log(con);
                 //Faz a consulta 
                 sql.query(con, function (err, rows, fields){
@@ -69,6 +71,7 @@ async function update(tabela, arguments, condition){
              
                
         } catch (err) {
+            log.info("Ocorreu um erro ao fazer o update" + err);
             //Reporta o erro na tela
           console.log('Um erro ocorreu ao fazer o update: ', err);
 
@@ -88,6 +91,7 @@ async function Insert(tabela, columns, values){
     return new Promise(async function(resolve,reject){
         try{
              //Printa na tela a string de busca
+            log.info('INSERT INTO ' + tabela + ' ' + columns + ' VALUES ' +values);
              console.log('INSERT INTO ' + tabela + ' ' + columns + ' VALUES ' +values);
              //Executa o Insert
              sql.query('INSERT INTO ' + tabela + ' ' + columns + ' VALUES ' +values, function (err, rows, fields){
@@ -97,6 +101,7 @@ async function Insert(tabela, columns, values){
      
         } catch (err) {
             //Mostra o erro na tela
+            log.info("Ocorreu um erro ao fazer o insert" + err);
           console.log('Um erro ocorreu ao inserir: ', err);
 
           reject(rows);
@@ -114,6 +119,7 @@ async function Delete(tabela, condition){
             //Checa se os parametros do WHERE não são nulos ou vazios, se forem avisa o usuário
             if(! (condition == "" || condition == " ")){
                 //Imprime na tela a string de busca
+                log.info('DELETE FROM ' + tabela + ' WHERE ' +condition);
                 console.log('DELETE FROM ' + tabela + ' WHERE ' +condition);
                 //Executa o delete
                 sql.query('DELETE FROM ' + tabela + ' WHERE ' +condition, function (err, rows, fields){
@@ -126,6 +132,7 @@ async function Delete(tabela, condition){
             
         } catch (err) {
             //Printa na tela o erro
+            log.info("Ocorreu um erro ao deletar" + err);
           console.log('Um erro ocorreu ao deletar', err);
 
           reject(rows);

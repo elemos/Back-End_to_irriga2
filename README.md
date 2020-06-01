@@ -10,10 +10,11 @@
     - readline
     - mysql
     - standard
+    - log4js
     
 5 - Preparar o banco de dados, criando um banco de dados local com a tabela cities e cities_wheater (arquivos em anexo)
 6 - Abrir o arquivo BD.js e inserir as credenciais do seu banco de dados criado.
-7 - abrir o arquivo server.js e inserir a chave de acesso a API.
+7 - abrir o arquivo server.js e inserir a chave de acesso a API na constante appid (primeira linha).
 8 - Voltar ao CMD e iniciar o servidor com o comando: node server.js
 
 # Comandos internos

@@ -1,12 +1,14 @@
-/*Constantes necessárias para o projeto
-/*Declaraçao de outros arquivos
-*/
+//Constantes necessárias para o projeto
+//Declaraçao de outros arquivos
+
+const appid = "";
 const express = require("express");
 const app = express();
 const model = require('./model.js');
 const axios = require('axios');
 const cron = require('node-cron');
 const readline = require ('readline');
+const log = require ('./logs.js');
 const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -23,6 +25,7 @@ var citieWeather = [];
 //Função que organiza as informações de busca no banco de dados
 //@param id: ID da cidade a ser procurada, caso esteja vazia buscará em todas cidade
 async function buscacidades(id){
+    log.info("Buscando a(s) cidade(s)");
     console.log("************************\n" +
                 "Buscando a(s) cidade(s)");
     if(id > 0){
@@ -30,6 +33,7 @@ async function buscacidades(id){
         let cities = await model.select("*", "cities", "id = "+id);
         //Se o retorno foi vázio significa que a consulta no sql não achu a cidade
         if(cities == ""){
+            log.warn("Cidade não encontrada, verifica ID passado");
             console.log("\n*******************************************")
             console.log("Cidade não encontrada, verificar ID passado");
         }
@@ -42,7 +46,7 @@ async function buscacidades(id){
         this.cidade = cities;
         
     }
-    
+    log.info(this.cidade);
     console.log(this.cidade);
     
 }
@@ -56,6 +60,10 @@ async function buscaclima(){
         
         //Se a latitude ou longitude forem nulas, quebra o loop e vai pra próxima
         if((this.cidade[i].latitude == null) || (this.cidade[i].longitude == null)){
+            log.warn("Latitude e Longitude da cidade:" +
+                        "\n ID: " + this.cidade[i].id +
+                        "\n Nome: " + this.cidade[i].name +
+                        "\n não informadas");
             console.log("\n*******************************")
             console.log("Latitude e Longitude da cidade:" +
                         "\n ID: " + this.cidade[i].id +
@@ -64,28 +72,30 @@ async function buscaclima(){
             break;
         }
         //buscando o json
+        log.info("Acessando a Api do clima");
         console.log("\n**************************\n" +
                     "Acessando a API do clima");
         
         await axios.get('http://api.openweathermap.org/data/2.5/weather?' +
                         'lat=' + this.cidade[i].latitude + '&' +
                         'lon=' + this.cidade[i].longitude + '&' +
-                        'appid=9b12c926e2e3d6b81482cf88efc3f15a&' +
+                        'appid=' + appid + '&' +
                         'units=metric').then(
             (response) => {
                 //Imprime na tela o json obtido
+                log.info(response.data);
                 console.log(response.data);
                 
                 //Recalcula os segundos das datas baseado no gmt das cidade.
                 //Se o GMT for positivo ele soma ao tempo recebido da API, se for negativo diminui 
                 if (this.cidade[i].gmt > 0 ){
-                    console.log("entrei aqui");
+                    
                     var sunrise = response.data.sys.sunrise + (Math.abs(this.cidade[i].gmt * 3600));
                     var sunset = response.data.sys.sunset + (Math.abs(this.cidade[i].gmt * 3600));
                     var dt = response.data.sys.dt + (Math.abs(this.cidade[i].gmt * 3600));
                 }
                 else{
-                    console.log("não, entrei aqui")
+                    
                     var sunrise = response.data.sys.sunrise - (Math.abs(this.cidade[i].gmt * 3600));
                     var sunset = response.data.sys.sunset - (Math.abs(this.cidade[i].gmt * 3600));
                     var dt = response.data.dt - (Math.abs(this.cidade[i].gmt * 3600));
@@ -105,6 +115,7 @@ async function buscaclima(){
 
                 
                 //Chama a função de insert no banco passando a tabela, colunas e valores
+                log.info("Salvando o clima no Banco");
                 console.log("***************************\n" +
                             "Salvando o clima no Banco");
                 model.Insert("citie_wheather", "", valores);
@@ -130,6 +141,7 @@ async function rotina(id){
 function schedule(){
     
     cron.schedule('30 */1 * * *', () => {
+        log.info("Rodando a busca Automática")
         console.log('**************************\n' +
                     'Rodando a busca Automatica');
         rotina();
@@ -159,6 +171,7 @@ async function start(){
             }
             //Caso o ID sejá invalido avisa o usuário
             else {
+                log.warn("ID da cidade deve ser maior que 0")
                 console.log("\n ID da cidade deve ser maior que 0");
             }
         }
@@ -169,6 +182,7 @@ async function start(){
 }
 
 app.listen(3000, () => {
+            log.info("Server Start");
             console.log("SERVER START \n \n");
             start();
            })
