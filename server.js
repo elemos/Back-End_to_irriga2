@@ -23,11 +23,14 @@ var citieWeather = [];
 //Função que organiza as informações de busca no banco de dados
 //@param id: ID da cidade a ser procurada, caso esteja vazia buscará em todas cidade
 async function buscacidades(id){
+    console.log("************************\n" +
+                "Buscando a(s) cidade(s)");
     if(id > 0){
         //chama o select passando o id como parametro do where
         let cities = await model.select("*", "cities", "id = "+id);
         //Se o retorno foi vázio significa que a consulta no sql não achu a cidade
         if(cities == ""){
+            console.log("\n*******************************************")
             console.log("Cidade não encontrada, verificar ID passado");
         }
         this.cidade = cities;
@@ -37,7 +40,7 @@ async function buscacidades(id){
         //chama o select sem parametro do where
         let cities = await model.select("*", "cities", "");
         this.cidade = cities;
-        console.log(this.cidade.latitude);
+        
     }
     
     console.log(this.cidade);
@@ -53,6 +56,7 @@ async function buscaclima(){
         
         //Se a latitude ou longitude forem nulas, quebra o loop e vai pra próxima
         if((this.cidade[i].latitude == null) || (this.cidade[i].longitude == null)){
+            console.log("\n*******************************")
             console.log("Latitude e Longitude da cidade:" +
                         "\n ID: " + this.cidade[i].id +
                         "\n Nome: " + this.cidade[i].name +
@@ -60,13 +64,33 @@ async function buscaclima(){
             break;
         }
         //buscando o json
+        console.log("\n**************************\n" +
+                    "Acessando a API do clima");
+        
         await axios.get('http://api.openweathermap.org/data/2.5/weather?' +
                         'lat=' + this.cidade[i].latitude + '&' +
                         'lon=' + this.cidade[i].longitude + '&' +
                         'appid=9b12c926e2e3d6b81482cf88efc3f15a&' +
                         'units=metric').then(
             (response) => {
-   
+                //Imprime na tela o json obtido
+                console.log(response.data);
+                
+                //Recalcula os segundos das datas baseado no gmt das cidade.
+                //Se o GMT for positivo ele soma ao tempo recebido da API, se for negativo diminui 
+                if (this.cidade[i].gmt > 0 ){
+                    console.log("entrei aqui");
+                    var sunrise = response.data.sys.sunrise + (Math.abs(this.cidade[i].gmt * 3600));
+                    var sunset = response.data.sys.sunset + (Math.abs(this.cidade[i].gmt * 3600));
+                    var dt = response.data.sys.dt + (Math.abs(this.cidade[i].gmt * 3600));
+                }
+                else{
+                    console.log("não, entrei aqui")
+                    var sunrise = response.data.sys.sunrise - (Math.abs(this.cidade[i].gmt * 3600));
+                    var sunset = response.data.sys.sunset - (Math.abs(this.cidade[i].gmt * 3600));
+                    var dt = response.data.dt - (Math.abs(this.cidade[i].gmt * 3600));
+                }
+                
                 //Seta os valores a serem inseridos no banco.
                 valores ='( 0,' +                           //0 pois o ID é autoincrement
                     this.cidade[i].id + ',' + 
@@ -74,12 +98,15 @@ async function buscaclima(){
                     response.data.main.temp_max + ',' +                                    
                     response.data.main.temp_min + ',' + 
                     response.data.wind.speed + ',' + 
-                    response.data.sys.sunrise + ',' +                                    
-                    response.data.sys.sunset + ',' + 
-                    0 + ',' +                                //Campos da quantidade de chuva que não está presenta no json
-                    response.data.dt + ')';
+                    sunrise + ',' +                         //Salva em segundos                               
+                    sunset + ',' +                          //Salva em segundos
+                    0 + ',' +                               //Campos da quantidade de chuva que não está presenta no json
+                    dt + ')';                               //TimeStamp em segundos
 
+                
                 //Chama a função de insert no banco passando a tabela, colunas e valores
+                console.log("***************************\n" +
+                            "Salvando o clima no Banco");
                 model.Insert("citie_wheather", "", valores);
 
             },
@@ -103,7 +130,8 @@ async function rotina(id){
 function schedule(){
     
     cron.schedule('30 */1 * * *', () => {
-        console.log('Rodando a busca a cada hora e meia');
+        console.log('**************************\n' +
+                    'Rodando a busca Automatica');
         rotina();
     });
 }
@@ -131,7 +159,7 @@ async function start(){
             }
             //Caso o ID sejá invalido avisa o usuário
             else {
-                console.log("ID da cidade deve ser maior que 0");
+                console.log("\n ID da cidade deve ser maior que 0");
             }
         }
     }
@@ -141,7 +169,7 @@ async function start(){
 }
 
 app.listen(3000, () => {
-            console.log("Server start");
+            console.log("SERVER START \n \n");
             start();
            })
 
